@@ -1,7 +1,10 @@
 on:
-  workflow_dispatch:
   push:
-    branches: [ master ]
+    branches:
+      - master
+    paths:
+      - '.config'
+  workflow_dispatch:
 #=================================================
 # https://github.com/P3TERX/Actions-OpenWrt
 # Description: Build OpenWrt using GitHub Actions
@@ -12,7 +15,6 @@ on:
 
 name: Build OpenWrt
 
-on:
   release:
     types: published
   push:
