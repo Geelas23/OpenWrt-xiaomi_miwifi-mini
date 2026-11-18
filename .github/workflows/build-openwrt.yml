@@ -21,13 +21,14 @@ env:
   REPO_BRANCH: master
   CONFIG_FILE: .config
   DIY_SH: diy.sh
-  UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id
+    env:
+      CMAKE_POLICY_VERSION_MINIMUM: "3.5"
 
     steps:
     - name: Checkout
@@ -40,7 +41,7 @@ jobs:
         sudo apt-get -qq update
         sudo apt-get -qq install build-essential binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev flex gcc-multilib g++-multilib p7zip p7zip-full libssl-dev texinfo autoconf automake libtool device-tree-compiler
         sudo apt-get -qq clean
-        
+
     - name: Clone source code
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
@@ -73,14 +74,7 @@ jobs:
         cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc) V=s
-        echo "::set-output name=status::success"
-
-    - name: Upload bin directory
-      uses: actions/upload-artifact@master
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-      with:
-        name: OpenWrt_bin
-        path: openwrt/bin
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Organize files
       id: organize
@@ -88,12 +82,12 @@ jobs:
       run: |
         cd openwrt/bin/targets/*/*
         rm -rf packages
-        echo "::set-env name=FIRMWARE::$PWD"
-        echo "::set-output name=status::success"
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@master
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware
-        path: ${{ env.FIRMWARE }}
+        path: openwrt/bin/targets/ramips/mt7620
