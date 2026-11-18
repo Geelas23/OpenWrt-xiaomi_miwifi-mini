@@ -38,9 +38,9 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt-get -qq update
-        sudo apt-get -qq install build-essential binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 flex gcc-multilib g++-multilib p7zip p7zip-full libssl-dev texinfo autoconf automake libtool device-tree-compiler
+        sudo apt-get -qq install build-essential binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev flex gcc-multilib g++-multilib p7zip p7zip-full libssl-dev texinfo autoconf automake libtool device-tree-compiler
         sudo apt-get -qq clean
-
+        
     - name: Clone source code
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
